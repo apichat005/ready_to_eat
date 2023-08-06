@@ -72,19 +72,6 @@ export default Login = ({ navigation }) => {
                         </View>
                         <View style={{ flex: 1, height: 1, backgroundColor: '#61677A' }} />
                     </View>
-
-                    {/* <TouchableOpacity style={{ backgroundColor: '#61677A', width: '100%', padding: 10, borderRadius: 50, marginTop: 10 }}>
-                <Text style={{ color: 'white', textAlign: 'center', fontSize: 15 , fontFamily: 'SukhumvitSet-SemiBold' }}>สมัครสมาชิก</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity style={{ backgroundColor: '#4779ee', width: '100%', padding: 10, borderRadius: 50, marginTop: 10 }}>
-                <Text style={{ color: 'white', textAlign: 'center', fontSize: 15 , fontFamily: 'SukhumvitSet-SemiBold' }}>เข้าสู่ระบบด้วย Facebook</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity style={{ backgroundColor: '#DB4437', width: '100%', padding: 10, borderRadius: 50, marginTop: 10 }}>
-                <Text style={{ color: 'white', textAlign: 'center', fontSize: 15 , fontFamily: 'SukhumvitSet-SemiBold' }}>เข้าสู่ระบบด้วย Google</Text>
-            </TouchableOpacity> */}
-
                     <View style={styles.other_login}>
                         <TouchableOpacity>
                             <Image source={facebook} style={{ width: 50, height: 50, objectFit: 'contain' }} />
