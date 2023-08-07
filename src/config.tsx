@@ -1,4 +1,8 @@
-export default config = () => {
+import React, { useState , useEffect, useCallback, useRef } from 'react';
+import { useFonts } from 'expo-font';
+import * as SplashScreen from 'expo-splash-screen';
+
+const config = () => {
     const [fontsLoaded] = useFonts({
         'SukhumvitSet-Bold': require('../assets/fonts/SukhumvitSet-Bold.ttf'),
         'SukhumvitSet-SemiBold': require('../assets/fonts/SukhumvitSet-SemiBold.ttf'),
@@ -15,3 +19,4 @@ export default config = () => {
         return null;
     }
 }
+export default config;

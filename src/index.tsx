@@ -1,4 +1,4 @@
-export { default as Main } from './Main';
+export { default as First } from './First';
 export { default as MemberType } from './MemberType';
 export { default as Regis } from './Regis';
 export { default as Login } from './Login';

@@ -10,7 +10,7 @@ import {
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { Main , Login , Regis , RegisCustomer , RegisStore , MemberType } from "./src";
+import { First , Login , Regis , RegisCustomer , RegisStore , MemberType } from "./src";
 
 export default function App() {
   const Stack = createNativeStackNavigator();
@@ -21,7 +21,7 @@ export default function App() {
               headerShown: false
             }}
           >
-            <Stack.Screen name="Home" component={Main} />
+            <Stack.Screen name="Home" component={First} />
             <Stack.Screen name="Login" component={Login} />
             <Stack.Screen name="Regis" component={Regis} />
             <Stack.Screen name="Regis_customer" component={RegisCustomer} />

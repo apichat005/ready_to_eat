@@ -2,7 +2,6 @@ import React, { useState , useEffect, useCallback, useRef } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, TextInput, ScrollView, FlatList , Platform} from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/FontAwesome5';
-import { useFonts } from 'expo-font';
 import BottomSheet from "react-native-gesture-bottom-sheet";
 import * as Location from 'expo-location';
 import MapView , { PROVIDER_GOOGLE } from 'react-native-maps';
