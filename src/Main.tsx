@@ -1,19 +1,11 @@
 import React , {useCallback} from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, TextInput, Button, TouchableOpacity, ImageBackground, Image } from 'react-native';
-import bg from '../assets/bakery.png';
+import {bakery} from '../assets/list';
+import * as SplashScreen from 'expo-splash-screen';
 import { useFonts } from 'expo-font';
-import {
-    SafeAreaView,
-    SafeAreaProvider,
-    SafeAreaInsetsContext,
-    useSafeAreaInsets,
-    initialWindowMetrics,
-  } from 'react-native-safe-area-context';
 
-export default Main = ({navigation}) => {
-    // const navigation = useNavigate();
-
+const Home = ({navigation}) => {
     const [fontsLoaded] = useFonts({
         'SukhumvitSet-Bold': require('../assets/fonts/SukhumvitSet-Bold.ttf'),
         'SukhumvitSet-SemiBold': require('../assets/fonts/SukhumvitSet-SemiBold.ttf'),
@@ -32,7 +24,7 @@ export default Main = ({navigation}) => {
 
     return (
         <View style={styles.container}>
-            <Image source={bg} style={{ width: 162, height: 120, objectFit: 'contain' }} />
+            <Image source={bakery} style={{ width: 162, height: 120, objectFit: 'contain' }} />
             <Text style={styles.title}>Ready to eat</Text>
             <Text style={{ marginTop: 30 , fontFamily: 'SukhumvitSet-Text' }}>
                 {
@@ -47,6 +39,8 @@ export default Main = ({navigation}) => {
         </View>
     )
 }
+
+export default Home;
 
 const styles = StyleSheet.create({
     container: {

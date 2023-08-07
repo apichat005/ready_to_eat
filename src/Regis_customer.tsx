@@ -9,7 +9,14 @@ import MapView , { PROVIDER_GOOGLE } from 'react-native-maps';
 import './config'
 
 const Regis_customer = ({ navigation }) => {
-    const bottomSheet = useRef();
+    interface Data {
+        id: number;
+        label: string;
+        value: string;
+        old: number;
+    }
+
+    const bottomSheet = useRef() as React.MutableRefObject<BottomSheet>;
     const [latitude, setLatitude] = useState(null);
     const [longitude, setLongitude] = useState(null);
     // check platform
@@ -34,7 +41,7 @@ const Regis_customer = ({ navigation }) => {
         getLocation();
     })
 
-    const [old, setOld] = useState() // อายุ
+    const [old, setOld] = useState(0) // อายุ
     const OldList = [
         { id: 1, label: '0 - 9 ปี', value: '0 - 9 ปี' },
         { id: 2, label: '10 - 19 ปี', value: '10 - 19 ปี' },
@@ -52,7 +59,7 @@ const Regis_customer = ({ navigation }) => {
                         onPress={() => navigation.goBack()}
                     >
                         <View style={{ flexDirection: 'row' }}>
-                            <Icon name="chevron-left" size={20} color="#FF8D00" style={{ top: 4 }} onPress={() => naviate('/login')} />
+                            <Icon name="chevron-left" size={20} color="#FF8D00" style={{ top: 4 }} />
                             <Text style={{ fontSize: 18, fontFamily: 'SukhumvitSet-Bold', color: '#FF8D00', marginLeft: 5 }}> ย้อนกลับ</Text>
                         </View>
                     </TouchableOpacity>
@@ -86,20 +93,19 @@ const Regis_customer = ({ navigation }) => {
                                     <TouchableOpacity
                                         style={{ padding: 10, borderBottomWidth: 1, borderBottomColor: '#EAEAEA' }}
                                         onPress={() => {
-                                            setOld(item.value)
+                                            setOld(item.id)
                                             bottomSheet.current.close()
                                         }}
                                     >
                                         <View style={{flexDirection:'row',justifyContent:'space-between'}}>
                                             <Text style={{ fontFamily: 'SukhumvitSet-SemiBold' , fontSize:16 , marginLeft:2 }}>{item.label}</Text>
                                             {
-                                                old == item.value ? <Icon name="check" size={16} color="#FF8D00" style={{ top: 4, marginRight: 5 }} /> : null
+                                                old == item.id ? <Icon name="check" size={16} color="#FF8D00" style={{ top: 4, marginRight: 5 }} /> : null
                                             }
                                         </View>
                                         
                                     </TouchableOpacity>
                                 )}
-                                keyExtractor={item => item.id}
                             />
                     </BottomSheet>
 

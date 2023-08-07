@@ -41,7 +41,7 @@ export default Regis = ({navigation}) => {
                 onPress={() => navigation.goBack()}
             >
                 <View style={{ flexDirection: 'row' }}>
-                    <Icon name="chevron-left" size={20} color="#FF8D00" style={{ top: 4 }} onPress={() => navigation.navigate('Regis')} />
+                    <Icon name="chevron-left" size={20} color="#FF8D00" style={{ top: 4 }} />
                     <Text style={{ fontSize: 18, fontFamily: 'SukhumvitSet-Bold', color: '#FF8D00', marginLeft: 5 }}> ย้อนกลับ</Text>
                 </View>
             </TouchableOpacity>
