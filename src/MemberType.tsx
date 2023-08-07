@@ -6,8 +6,9 @@ import {
 } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import { useFonts } from 'expo-font';
+import * as SplashScreen from 'expo-splash-screen';
 
-export default MemberType = ({ navigation }) => {
+const MemberType = ({ navigation }) => {
 
     const [isChecked, setChecked] = useState(false);
 
@@ -63,6 +64,8 @@ export default MemberType = ({ navigation }) => {
         </SafeAreaProvider>
     )
 }
+
+export default MemberType;
 
 const styles = StyleSheet.create({
     container: {
