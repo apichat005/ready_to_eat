@@ -40,6 +40,7 @@ const Regis_customer = ({ navigation }) => {
         getLocation();
     })
 
+    const [oldLable , setOldLable] = useState('เลือกช่วงอายุ') // ช่วงอายุ
     const [old, setOld] = useState(0) // อายุ
     const OldList = [
         { id: 1, label: '0 - 9 ปี', value: '0 - 9 ปี' },
@@ -76,7 +77,7 @@ const Regis_customer = ({ navigation }) => {
                     >
                         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                             <Text style={{ color: '#5E605E', fontFamily: 'SukhumvitSet-Text' }}>
-                                {old ? old : 'เลือกช่วงอายุ'}
+                                {oldLable}
                             </Text>
                             <Icon name="chevron-down" size={14} color="#5E605E" style={{ top: 4, marginRight: 5 }} />
                         </View>
@@ -92,6 +93,7 @@ const Regis_customer = ({ navigation }) => {
                                     <TouchableOpacity
                                         style={{ padding: 10, borderBottomWidth: 1, borderBottomColor: '#EAEAEA' }}
                                         onPress={() => {
+                                            setOldLable(item.label)
                                             setOld(item.id)
                                             bottomSheet.current.close()
                                         }}
