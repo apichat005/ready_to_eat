@@ -56,7 +56,7 @@ const Login = ({ navigation }) => {
                     </TouchableOpacity>
 
                     <TouchableOpacity style={{ paddingTop: 5, marginTop: 10 }}
-                        onPress={() => navigation.navigate('Regis_store')}
+                        onPress={() => navigation.navigate('Home_customer')}
                     >
                         <Text style={{ color: '#515151', textAlign: 'center', fontSize: 15, fontFamily: 'SukhumvitSet-SemiBold' }}>ลืมรหัสผ่าน</Text>
                     </TouchableOpacity>

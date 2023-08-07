@@ -1,10 +1,10 @@
-import React, { useState , useEffect, useCallback, useRef } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, TextInput, ScrollView, FlatList , Platform} from 'react-native';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { StyleSheet, Text, View, TouchableOpacity, TextInput, ScrollView, FlatList, Platform } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import BottomSheet from "react-native-gesture-bottom-sheet";
 import * as Location from 'expo-location';
-import MapView , { PROVIDER_GOOGLE } from 'react-native-maps';
+import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
 import './config'
 
 const Regis_customer = ({ navigation }) => {
@@ -18,6 +18,8 @@ const Regis_customer = ({ navigation }) => {
     const bottomSheet = useRef() as React.MutableRefObject<BottomSheet>;
     const [latitude, setLatitude] = useState(null);
     const [longitude, setLongitude] = useState(null);
+    const [show, setShow] = useState(true)
+    const [showPassword, setShowPassword] = useState(true)
     // check platform
     const isWeb = Platform.OS === 'web';
     const isAndroid = Platform.OS === 'android';
@@ -40,7 +42,7 @@ const Regis_customer = ({ navigation }) => {
         getLocation();
     })
 
-    const [oldLable , setOldLable] = useState('เลือกช่วงอายุ') // ช่วงอายุ
+    const [oldLable, setOldLable] = useState('เลือกช่วงอายุ') // ช่วงอายุ
     const [old, setOld] = useState(0) // อายุ
     const OldList = [
         { id: 1, label: '0 - 9 ปี', value: '0 - 9 ปี' },
@@ -54,7 +56,7 @@ const Regis_customer = ({ navigation }) => {
     return (
         <SafeAreaProvider style={{ backgroundColor: '#FFF9EB' }}>
             <SafeAreaView style={{ flex: 1, backgroundColor: 'transparent' }}>
-                <View style={{ padding: 20, paddingTop: 0 }}>
+                <View style={{ padding: 20, paddingTop: 0, paddingBottom: 10 }}>
                     <TouchableOpacity
                         onPress={() => navigation.goBack()}
                     >
@@ -71,6 +73,31 @@ const Regis_customer = ({ navigation }) => {
                     <TextInput style={styles.form_control} placeholder="ชื่อ - นามสกุล" />
                     <TextInput style={styles.form_control} placeholder="เบอร์โทรศัพท์" keyboardType="numeric" maxLength={10} />
                     <TextInput style={styles.form_control} placeholder="อีเมล์" />
+                    <View>
+                        <TextInput style={styles.form_control} placeholder="รหัสผ่าน"
+                            secureTextEntry={showPassword}
+                        />
+                        <TouchableOpacity
+                            style={{ position: 'absolute', right: 0 }}
+                            onPress={() => setShowPassword(!showPassword)}
+                        >
+                            <Icon name={show ? 'eye' : 'eye-slash'} size={18} color="#61677A" style={{ position: 'relative', right: 15, top: 23 }} />
+                        </TouchableOpacity>
+                    </View>
+
+                    <View>
+                        <TextInput style={styles.form_control} placeholder="ยืนยันรหัสผ่าน"
+                            secureTextEntry={show}
+                        />
+                        <TouchableOpacity
+                            style={{ position: 'absolute', right: 0 }}
+                            onPress={() => setShow(!show)}
+                        >
+                            <Icon name={show ? 'eye' : 'eye-slash'} size={18} color="#61677A" style={{ position: 'relative', right: 15, top: 23 }} />
+                        </TouchableOpacity>
+                    </View>
+
+
                     <TouchableOpacity
                         style={styles.form_select}
                         onPress={() => bottomSheet.current.show()}
@@ -82,35 +109,34 @@ const Regis_customer = ({ navigation }) => {
                             <Icon name="chevron-down" size={14} color="#5E605E" style={{ top: 4, marginRight: 5 }} />
                         </View>
                     </TouchableOpacity>
-
                     <BottomSheet hasDraggableIcon ref={bottomSheet} height={400}>
-                        <Text style={{fontSize: 18,color:'#FF8D00',marginLeft:10,fontFamily:'SukhumvitSet-SemiBold'}}>
+                        <Text style={{ fontSize: 18, color: '#FF8D00', marginLeft: 10, fontFamily: 'SukhumvitSet-SemiBold' }}>
                             เลือกช่วงอายุ
                         </Text>
-                            <FlatList
-                                data={OldList}
-                                renderItem={({ item }) => (
-                                    <TouchableOpacity
-                                        style={{ padding: 10, borderBottomWidth: 1, borderBottomColor: '#EAEAEA' }}
-                                        onPress={() => {
-                                            setOldLable(item.label)
-                                            setOld(item.id)
-                                            bottomSheet.current.close()
-                                        }}
-                                    >
-                                        <View style={{flexDirection:'row',justifyContent:'space-between'}}>
-                                            <Text style={{ fontFamily: 'SukhumvitSet-SemiBold' , fontSize:16 , marginLeft:2 }}>{item.label}</Text>
-                                            {
-                                                old == item.id ? <Icon name="check" size={16} color="#FF8D00" style={{ top: 4, marginRight: 5 }} /> : null
-                                            }
-                                        </View>
-                                        
-                                    </TouchableOpacity>
-                                )}
-                            />
+                        <FlatList
+                            data={OldList}
+                            renderItem={({ item }) => (
+                                <TouchableOpacity
+                                    style={{ padding: 10, borderBottomWidth: 1, borderBottomColor: '#EAEAEA' }}
+                                    onPress={() => {
+                                        setOldLable(item.label)
+                                        setOld(item.id)
+                                        bottomSheet.current.close()
+                                    }}
+                                >
+                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                                        <Text style={{ fontFamily: 'SukhumvitSet-SemiBold', fontSize: 16, marginLeft: 2 }}>{item.label}</Text>
+                                        {
+                                            old == item.id ? <Icon name="check" size={16} color="#FF8D00" style={{ top: 4, marginRight: 5 }} /> : null
+                                        }
+                                    </View>
+
+                                </TouchableOpacity>
+                            )}
+                        />
                     </BottomSheet>
 
-                    <MapView style={styles.map} 
+                    <MapView style={styles.map}
                         showsUserLocation={true}
                         provider={PROVIDER_GOOGLE}
                         region={{
@@ -160,7 +186,7 @@ const styles = StyleSheet.create({
     form_select: {
         width: '100%',
         marginTop: 10,
-        padding: 14,
+        padding: 10,
         borderRadius: 50,
         borderWidth: 0.8,
         borderColor: '#FF8D00',

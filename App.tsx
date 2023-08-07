@@ -1,16 +1,6 @@
-import { NativeRouter, Routes, Route, Link, useNavigate } from "react-router-native";
-import { StyleSheet, Text, View, TextInput, Button, TouchableOpacity, ImageBackground, Image } from 'react-native';
-import {
-  SafeAreaView,
-  SafeAreaProvider,
-  SafeAreaInsetsContext,
-  useSafeAreaInsets,
-  initialWindowMetrics,
-} from 'react-native-safe-area-context';
-
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { First , Login , Regis , RegisCustomer , RegisStore , MemberType } from "./src";
+import { First , Login , Regis , RegisCustomer , RegisStore , MemberType , HomeCustomer } from "./src";
 
 export default function App() {
   const Stack = createNativeStackNavigator();
@@ -27,6 +17,7 @@ export default function App() {
             <Stack.Screen name="Regis_customer" component={RegisCustomer} />
             <Stack.Screen name="Regis_store" component={RegisStore} />
             <Stack.Screen name="Member_type" component={MemberType} />
+            <Stack.Screen name="Home_customer" component={HomeCustomer} />
           </Stack.Navigator>
         </NavigationContainer>
   );

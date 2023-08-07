@@ -4,3 +4,4 @@ export { default as Regis } from './Regis';
 export { default as Login } from './Login';
 export { default as RegisCustomer } from './Regis_customer';
 export { default as RegisStore } from './Regis_store';
+export { default as HomeCustomer } from './Home_customer';

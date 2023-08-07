@@ -24,6 +24,8 @@ const Regis_store = ({ navigation }) => {
 
     const [isLoading, setLoading] = useState(false);
     const bottomSheet = useRef() as React.MutableRefObject<BottomSheet>;
+    const [show, setShow] = useState(true)
+    const [showPassword, setShowPassword] = useState(true)
     const [data, setData] = useState({
         store_name: '',
         name:'',
@@ -65,7 +67,6 @@ const Regis_store = ({ navigation }) => {
         }
     };
 
-
     const list = [
         { id: 1, value: 'A' },
         { id: 2, value: 'B' },
@@ -77,7 +78,7 @@ const Regis_store = ({ navigation }) => {
     return (
         <SafeAreaProvider style={{ backgroundColor: '#FFF9EB' }}>
             <SafeAreaView style={{ flex: 1, backgroundColor: 'transparent' }}>
-                <View style={{ padding: 20, paddingTop: 0 }}>
+                <View style={{ padding: 20, paddingTop: 0 , paddingBottom:10 }}>
                     <TouchableOpacity
                         onPress={() => navigation.goBack()}
                     >
@@ -114,6 +115,29 @@ const Regis_store = ({ navigation }) => {
                             email: val
                         })}
                     />
+                                        <View>
+                        <TextInput style={styles.form_control} placeholder="รหัสผ่าน"
+                            secureTextEntry={showPassword}
+                        />
+                        <TouchableOpacity
+                            style={{ position: 'absolute', right: 0 }}
+                            onPress={() => setShowPassword(!showPassword)}
+                        >
+                            <Icon name={show ? 'eye' : 'eye-slash'} size={18} color="#61677A" style={{ position: 'relative', right: 15, top: 23 }} />
+                        </TouchableOpacity>
+                    </View>
+
+                    <View>
+                        <TextInput style={styles.form_control} placeholder="ยืนยันรหัสผ่าน"
+                            secureTextEntry={show}
+                        />
+                        <TouchableOpacity
+                            style={{ position: 'absolute', right: 0 }}
+                            onPress={() => setShow(!show)}
+                        >
+                            <Icon name={show ? 'eye' : 'eye-slash'} size={18} color="#61677A" style={{ position: 'relative', right: 15, top: 23 }} />
+                        </TouchableOpacity>
+                    </View>
                     <TouchableOpacity style={styles.form_select} onPress={() => bottomSheet.current.show()}>
                         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                             <Text style={{ color: '#5E605E', fontFamily: 'SukhumvitSet-Text' }}>
@@ -236,7 +260,7 @@ const styles = StyleSheet.create({
     form_select: {
         width: '100%',
         marginTop: 10,
-        padding: 14,
+        padding: 10,
         borderRadius: 50,
         borderWidth: 0.8,
         borderColor: '#FF8D00',
