@@ -1,13 +1,14 @@
 import React, { useState , useEffect, useCallback, useRef } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, TextInput, ScrollView, FlatList } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, TextInput, ScrollView, FlatList , Platform} from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import { useFonts } from 'expo-font';
 import BottomSheet from "react-native-gesture-bottom-sheet";
 import * as Location from 'expo-location';
 import MapView , { PROVIDER_GOOGLE } from 'react-native-maps';
+import './config'
 
-export default Regis_customer = ({ navigation }) => {
+const Regis_customer = ({ navigation }) => {
     const bottomSheet = useRef();
     const [latitude, setLatitude] = useState(null);
     const [longitude, setLongitude] = useState(null);
@@ -42,22 +43,6 @@ export default Regis_customer = ({ navigation }) => {
         { id: 5, label: '40 - 54 ปี', value: '40 - 54 ปี' },
         { id: 6, label: '55 - ปีขึ้นไป', value: '55 - ปีขึ้นไป' }
     ]
-
-    const [fontsLoaded] = useFonts({
-        'SukhumvitSet-Bold': require('../assets/fonts/SukhumvitSet-Bold.ttf'),
-        'SukhumvitSet-SemiBold': require('../assets/fonts/SukhumvitSet-SemiBold.ttf'),
-        'SukhumvitSet-Text': require('../assets/fonts/SukhumvitSet-Text.ttf'),
-    });
-
-    const onLayoutRootView = useCallback(async () => {
-        if (fontsLoaded) {
-            await SplashScreen.hideAsync();
-        }
-    }, [fontsLoaded]);
-
-    if (!fontsLoaded) {
-        return null;
-    }
 
     return (
         <SafeAreaProvider style={{ backgroundColor: '#FFF9EB' }}>
@@ -142,6 +127,7 @@ export default Regis_customer = ({ navigation }) => {
         </SafeAreaProvider>
     );
 }
+export default Regis_customer;
 
 const styles = StyleSheet.create({
     container: {

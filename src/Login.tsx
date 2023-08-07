@@ -1,21 +1,17 @@
 import React, { useState, useCallback } from 'react';
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, TextInput, Button, TouchableOpacity, ImageBackground, Image, Platform } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, ImageBackground, Image, Platform } from 'react-native';
 import { useFonts } from 'expo-font';
-import bg from '../assets/bakery.png';
-import facebook from '../assets/facebook.png';
-import line from '../assets/line.png';
-import gmail from '../assets/gmail.png';
+import { bakery , facebook , line , gmail }from '../assets/list';
+import * as SplashScreen from 'expo-splash-screen';
 import {
     SafeAreaView,
-    SafeAreaProvider,
-    SafeAreaInsetsContext,
-    useSafeAreaInsets,
-    initialWindowMetrics,
+    SafeAreaProvider
   } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/FontAwesome5';
-export default Login = ({ navigation }) => {
+
+const Login = ({ navigation }) => {
     const [show, setShow] = useState(true)
+    const [isLoading , setLoading] = useState(true)
     const [fontsLoaded] = useFonts({
         'SukhumvitSet-Bold': require('../assets/fonts/SukhumvitSet-Bold.ttf'),
         'SukhumvitSet-SemiBold': require('../assets/fonts/SukhumvitSet-SemiBold.ttf'),
@@ -37,7 +33,7 @@ export default Login = ({ navigation }) => {
             <SafeAreaView style={{ flex: 1, backgroundColor: '#FFF9EB' }}>
                 <View style={styles.container}>
                     <View style={styles.flex}>
-                        <Image source={bg} style={{ width: 72, height: 72, objectFit: 'contain' }} />
+                        <Image source={bakery} style={{ width: 72, height: 72, objectFit: 'contain' }} />
                         <View style={{ marginLeft: 12, marginTop: 15 }}>
                             <Text style={{ fontSize: 20, color: '#E07D08', fontFamily: 'SukhumvitSet-SemiBold' }}>พร้อมกิน</Text>
                             <Text style={{ fontSize: 14, color: '#ABABAB', fontFamily: 'SukhumvitSet-SemiBold' }}>Ready to eat</Text>
@@ -72,6 +68,7 @@ export default Login = ({ navigation }) => {
                         </View>
                         <View style={{ flex: 1, height: 1, backgroundColor: '#61677A' }} />
                     </View>
+                    
                     <View style={styles.other_login}>
                         <TouchableOpacity>
                             <Image source={facebook} style={{ width: 50, height: 50, objectFit: 'contain' }} />
@@ -88,6 +85,7 @@ export default Login = ({ navigation }) => {
         </SafeAreaProvider>
     )
 }
+export default Login;
 
 const styles = StyleSheet.create({
     container: {

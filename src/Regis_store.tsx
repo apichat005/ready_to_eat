@@ -8,14 +8,22 @@ import * as ImagePicker from 'expo-image-picker';
 import * as Location from 'expo-location';
 import MapView , { PROVIDER_GOOGLE } from 'react-native-maps';
 
+interface Data {
+    store_name: string,
+    name: string,
+    phone: string,
+    email: string,
+    type: string,
+}
 
-export default Regis_store = ({ navigation }) => {
+const Regis_store = ({ navigation }) => {
+
     const [image, setImage] = useState([]);
     const [latitude, setLatitude] = useState(null);
     const [longitude, setLongitude] = useState(null);
 
     const [isLoading, setLoading] = useState(false);
-    const bottomSheet = useRef();
+    const bottomSheet = useRef() as React.MutableRefObject<BottomSheet>;
     const [data, setData] = useState({
         store_name: '',
         name:'',
@@ -66,22 +74,6 @@ export default Regis_store = ({ navigation }) => {
         { id: 5, value: 'E' },
     ]
 
-    const [fontsLoaded] = useFonts({
-        'SukhumvitSet-Bold': require('../assets/fonts/SukhumvitSet-Bold.ttf'),
-        'SukhumvitSet-SemiBold': require('../assets/fonts/SukhumvitSet-SemiBold.ttf'),
-        'SukhumvitSet-Text': require('../assets/fonts/SukhumvitSet-Text.ttf'),
-    });
-
-    const onLayoutRootView = useCallback(async () => {
-        if (fontsLoaded) {
-            await SplashScreen.hideAsync();
-        }
-    }, [fontsLoaded]);
-
-    if (!fontsLoaded) {
-        return null;
-    }
-
     return (
         <SafeAreaProvider style={{ backgroundColor: '#FFF9EB' }}>
             <SafeAreaView style={{ flex: 1, backgroundColor: 'transparent' }}>
@@ -90,7 +82,7 @@ export default Regis_store = ({ navigation }) => {
                         onPress={() => navigation.goBack()}
                     >
                         <View style={{ flexDirection: 'row' }}>
-                            <Icon name="chevron-left" size={20} color="#FF8D00" style={{ top: 4 }} onPress={() => naviate('/login')} />
+                            <Icon name="chevron-left" size={20} color="#FF8D00" style={{ top: 4 }} onPress={() => navigation.navigate('login')} />
                             <Text style={{ fontSize: 18, fontFamily: 'SukhumvitSet-Bold', color: '#FF8D00', marginLeft: 5 }}> ย้อนกลับ</Text>
                         </View>
                     </TouchableOpacity>
@@ -156,7 +148,6 @@ export default Regis_store = ({ navigation }) => {
                                         </View>
                                     </TouchableOpacity>
                                 )}
-                                keyExtractor={item => item.id}
                             />
                         </ScrollView>
                     </BottomSheet>
@@ -165,7 +156,6 @@ export default Regis_store = ({ navigation }) => {
                         backgroundColor: 'white', 
                         borderWidth: 0.8,
                         borderColor: '#FF8D00',
-                        backgroundColor: '#FCFCFC',
                         marginTop: 10,
                         borderRadius: 10
                     }}>
@@ -178,8 +168,7 @@ export default Regis_store = ({ navigation }) => {
                                 image.map((item, index) => (
                                     <>
                                         <View>
-                                        <Image source={{ uri: item }} style={styles.imageItemGrid}>
-                                        </Image>
+                                        <Image source={{ uri: item }} style={styles.imageItemGrid}/>
                                         <TouchableOpacity style={{ position: 'relative', top: 0, right: 0, zIndex: 1, padding: 5 }}
                                             onPress={() => {
                                                 let newImage = image.filter((item, i) => i != index);
@@ -220,6 +209,8 @@ export default Regis_store = ({ navigation }) => {
         </SafeAreaProvider>
     )
 }
+
+export default Regis_store;
 
 const styles = StyleSheet.create({
     container: {
