@@ -239,7 +239,7 @@ const styles = StyleSheet.create({
         borderTopLeftRadius: 30,
         borderTopRightRadius: 30,
     },
-    
+
     navigationGrid: {
         flexDirection: 'row',
         justifyContent: 'space-around',

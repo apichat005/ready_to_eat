@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, ImageBackground, Image, Platform } from 'react-native';
 import { useFonts } from 'expo-font';
-import { bakery , facebook , line , gmail }from '../assets/list';
+import { bakery , facebook , line , gmail , user }from '../assets/list';
 import * as SplashScreen from 'expo-splash-screen';
 import {
     SafeAreaView,
@@ -70,6 +70,9 @@ const Login = ({ navigation }) => {
                     </View>
                     
                     <View style={styles.other_login}>
+                        <TouchableOpacity>
+                            <Image source={user} style={{ width: 50, height: 50, objectFit: 'contain' }} />
+                        </TouchableOpacity>
                         <TouchableOpacity>
                             <Image source={facebook} style={{ width: 50, height: 50, objectFit: 'contain' }} />
                         </TouchableOpacity>

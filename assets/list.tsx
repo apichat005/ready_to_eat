@@ -12,3 +12,4 @@ export { default as milk} from './milk.png';
 export { default as teaCup} from './tea-cup.png';
 export { default as drink} from './drink.png';
 export { default as bubbleTea} from './bubble-tea.png';
+export { default as user} from './user.png';

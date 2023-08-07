@@ -218,9 +218,8 @@ const Regis_store = ({ navigation }) => {
                             longitudeDelta: 0.0421
                         }}
                     />
-
                 </ScrollView>
-                <View style={{ padding: 20 , paddingTop:0 , paddingBottom: 10 }}>
+                <View style={{ padding: 20 , paddingTop: 0 , paddingBottom:10 }}>
                     <TouchableOpacity style={{ backgroundColor: '#FF8D00', width: '100%', padding: 12, borderRadius: 50, marginTop: 20 }}
                         onPress={() => navigation.navigate('Regis_customer')}
                     >
