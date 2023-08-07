@@ -1,6 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, TextInput, Button, TouchableOpacity, ImageBackground, Image, ScrollView , Platform } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, ImageBackground, Image, ScrollView , Platform } from 'react-native';
 import {
     SafeAreaView,
     SafeAreaProvider
@@ -8,8 +7,9 @@ import {
 import Checkbox from 'expo-checkbox';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import { useFonts } from 'expo-font';
+import * as SplashScreen from 'expo-splash-screen';
 
-export default Regis = ({navigation}) => {
+const Regis = ({navigation}) => {
         // check platform
         const isWeb = Platform.OS === 'web';
         const isAndroid = Platform.OS === 'android';
@@ -84,6 +84,7 @@ Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor 
         </SafeAreaProvider>
     )
 }
+export default Regis;
 
 const styles = StyleSheet.create({
     container: {
@@ -95,9 +96,6 @@ const styles = StyleSheet.create({
         paddingLeft: 20,
         paddingRight: 20,
         backgroundColor: '#FFF9EB',
-    },
-    checkbox: {
-        alignSelf: "center",
     },
     paragraph: {
         fontSize: 15,
