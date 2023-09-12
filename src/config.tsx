@@ -19,4 +19,5 @@ const config = () => {
         return null;
     }
 }
+
 export default config;

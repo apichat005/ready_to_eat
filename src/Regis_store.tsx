@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, TextInput, FlatList, ScrollView, Image } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, TextInput, FlatList, ScrollView, Image, Alert , NativeModules } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import BottomSheet from "react-native-gesture-bottom-sheet";
 import { isLoaded, isLoading, useFonts } from 'expo-font';
 import * as ImagePicker from 'expo-image-picker';
 import * as Location from 'expo-location';
-import MapView , { PROVIDER_GOOGLE } from 'react-native-maps';
+import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface Data {
     store_name: string,
@@ -19,6 +20,7 @@ interface Data {
 const Regis_store = ({ navigation }) => {
 
     const [image, setImage] = useState([]);
+    const [image_upload , setImage_upload]  = useState([]);
     const [latitude, setLatitude] = useState(null);
     const [longitude, setLongitude] = useState(null);
 
@@ -26,12 +28,15 @@ const Regis_store = ({ navigation }) => {
     const bottomSheet = useRef() as React.MutableRefObject<BottomSheet>;
     const [show, setShow] = useState(true)
     const [showPassword, setShowPassword] = useState(true)
+    const [showConfirm, setShowConfirm] = useState(true)
     const [data, setData] = useState({
         store_name: '',
-        name:'',
+        name: '',
         phone: '',
         email: '',
         type: '',
+        password: '',
+        confirm: '',
     })
 
     useEffect(() => {
@@ -64,21 +69,68 @@ const Regis_store = ({ navigation }) => {
 
         if (!result.canceled) {
             setImage(result.assets.map((item) => item.uri));
+            var data = []
+            result.assets.map((item) => {
+                data.push({
+                    uri: item.uri,
+                    type: item.type,
+                    name: item.fileName
+                })
+            })
+            setImage_upload(data);
         }
     };
 
-    const list = [
-        { id: 1, value: 'A' },
-        { id: 2, value: 'B' },
-        { id: 3, value: 'C' },
-        { id: 4, value: 'D' },
-        { id: 5, value: 'E' },
-    ]
+    // save data
+    const saveData = () => {
+        if (data.password !== data.confirm) {
+            Alert.alert('รหัสผ่านไม่ตรงกัน')
+            return
+        } else if (data.password.length < 6) {
+            Alert.alert('รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร')
+            return
+        } else {
+            setLoading(true);
+            var formData = new FormData();
+            formData.append('store_name', data.store_name);
+            formData.append('name', data.name);
+            formData.append('phone', data.phone);
+            formData.append('email', data.email);
+            formData.append('password', data.password);
+            formData.append('latitude', latitude.toString());
+            formData.append('longitude', longitude.toString());
+            formData.append('status', 's');
+            
+            image_upload.forEach(element => {
+                formData.append('image[]', element);
+            });
+
+            fetch('http://apichatapi.ddns.net:8888/prompt_gin_api/public/api/regis_store', {
+                method: 'POST',
+                body: formData
+            }).then(res=> res.json())
+            .then(res=> {
+                if(res.status == 200){
+                    setLoading(false);
+                    AsyncStorage.setItem('data', JSON.stringify(res.data));
+                    NativeModules.DevSettings.reload();
+                    Alert.alert('สมัครสมาชิกสำเร็จ');
+                    // navigation.navigate('Login');
+                }else{
+                    setLoading(false);
+                    Alert.alert('สมัครสมาชิกไม่สำเร็จ');
+                }
+            }).catch(err=> {
+                alert(err);
+            })
+        }
+    }
+
 
     return (
         <SafeAreaProvider style={{ backgroundColor: '#FFF9EB' }}>
             <SafeAreaView style={{ flex: 1, backgroundColor: 'transparent' }}>
-                <View style={{ padding: 20, paddingTop: 0 , paddingBottom:10 }}>
+                <View style={{ padding: 20, paddingTop: 0, paddingBottom: 10 }}>
                     <TouchableOpacity
                         onPress={() => navigation.goBack()}
                     >
@@ -103,7 +155,9 @@ const Regis_store = ({ navigation }) => {
                             name: val
                         })}
                     />
-                    <TextInput style={styles.form_control} placeholder="เบอร์โทรศัพท์" keyboardType="numeric" maxLength={10}
+                    <TextInput style={styles.form_control} placeholder="เบอร์โทรศัพท์"
+                        keyboardType="numeric"
+                        maxLength={10}
                         onChangeText={(val) => setData({
                             ...data,
                             phone: val
@@ -115,76 +169,46 @@ const Regis_store = ({ navigation }) => {
                             email: val
                         })}
                     />
-                                        <View>
+                    <View>
                         <TextInput style={styles.form_control} placeholder="รหัสผ่าน"
                             secureTextEntry={showPassword}
+                            onChangeText={(val) => setData({
+                                ...data,
+                                password: val
+                            })}
                         />
                         <TouchableOpacity
                             style={{ position: 'absolute', right: 0 }}
                             onPress={() => setShowPassword(!showPassword)}
                         >
-                            <Icon name={show ? 'eye' : 'eye-slash'} size={18} color="#61677A" style={{ position: 'relative', right: 15, top: 23 }} />
+                            <Icon name={showPassword ? 'eye' : 'eye-slash'} size={18} color="#61677A" style={{ position: 'relative', right: 15, top: 23 }} />
                         </TouchableOpacity>
                     </View>
 
                     <View>
                         <TextInput style={styles.form_control} placeholder="ยืนยันรหัสผ่าน"
-                            secureTextEntry={show}
+                            secureTextEntry={showConfirm}
+                            onChangeText={(val) => setData({
+                                ...data,
+                                confirm: val
+                            })}
                         />
                         <TouchableOpacity
                             style={{ position: 'absolute', right: 0 }}
-                            onPress={() => setShow(!show)}
+                            onPress={() => setShowConfirm(!showConfirm)}
                         >
-                            <Icon name={show ? 'eye' : 'eye-slash'} size={18} color="#61677A" style={{ position: 'relative', right: 15, top: 23 }} />
+                            <Icon name={showConfirm ? 'eye' : 'eye-slash'} size={18} color="#61677A" style={{ position: 'relative', right: 15, top: 23 }} />
                         </TouchableOpacity>
                     </View>
-                    <TouchableOpacity style={styles.form_select} onPress={() => bottomSheet.current.show()}>
-                        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                            <Text style={{ color: '#5E605E', fontFamily: 'SukhumvitSet-Text' }}>
-                                {data.type ? data.type : <Text style={{ color: 'silver' }}>เลือกประเภทร้านค้า</Text>}
-                            </Text>
-                            <Icon name="chevron-down" size={14} color="#5E605E" style={{ top: 4, marginRight: 5 }} />
-                        </View>
-                    </TouchableOpacity>
-                    <BottomSheet hasDraggableIcon ref={bottomSheet} height={600}>
-                        <Text style={{ fontSize: 18, color: '#FF8D00', marginLeft: 10, fontFamily: 'SukhumvitSet-SemiBold' }}>
-                            เลือกประเภทร้านค้า
-                        </Text>
-                        <ScrollView>
-                            <FlatList
-                                data={list}
-                                renderItem={({ item }) => (
-                                    <TouchableOpacity
-                                        style={{ padding: 10, borderBottomWidth: 1, borderBottomColor: '#EAEAEA' }}
-                                        onPress={() => {
-                                            setData({
-                                                ...data,
-                                                type: item.value
-                                            })
-                                            bottomSheet.current.close()
-                                        }}
-                                    >
-                                        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                                            <Text style={{ fontFamily: 'SukhumvitSet-SemiBold', fontSize: 16, marginLeft: 2 }}>{item.value}</Text>
-                                            {
-                                                data.type == item.value ? <Icon name="check" size={16} color="#FF8D00" style={{ top: 4, marginRight: 5 }} /> : null
-                                            }
-                                        </View>
-                                    </TouchableOpacity>
-                                )}
-                            />
-                        </ScrollView>
-                    </BottomSheet>
-
                     <View style={{
-                        backgroundColor: 'white', 
+                        backgroundColor: 'white',
                         borderWidth: 0.8,
                         borderColor: '#FF8D00',
                         marginTop: 10,
                         borderRadius: 10
                     }}>
                         <TouchableOpacity onPress={pickImage} style={styles.uploadimage}>
-                            <Icon name="camera" size={30} color="#FF8D00" style={{ top: 0, marginRight: 10, textAlign: 'center'}} />
+                            <Icon name="camera" size={30} color="#FF8D00" style={{ top: 0, marginRight: 10, textAlign: 'center' }} />
                             <Text style={{ color: '#5E605E', fontFamily: 'SukhumvitSet-SemiBold', textAlign: 'center', marginTop: 5 }}>อัพโหลดรูปภาพ</Text>
                         </TouchableOpacity>
                         <View style={styles.imageGrid}>
@@ -192,15 +216,19 @@ const Regis_store = ({ navigation }) => {
                                 image.map((item, index) => (
                                     <>
                                         <View>
-                                        <Image source={{ uri: item }} style={styles.imageItemGrid}/>
-                                        <TouchableOpacity style={{ position: 'relative', top: 0, right: 0, zIndex: 1, padding: 5 }}
-                                            onPress={() => {
-                                                let newImage = image.filter((item, i) => i != index);
-                                                setImage(newImage);
-                                            }}
-                                        >
-                                            <Icon name="times" size={20} color="#FF8D00" />
-                                        </TouchableOpacity>
+                                            <Image source={{ uri: item }} style={styles.imageItemGrid} />
+                                            <TouchableOpacity style={{ position: 'relative', top: 0, right: 0, zIndex: 1, padding: 5 }}
+                                                onPress={() => {
+                                                    let newImage = image.filter((item, i) => i != index);
+                                                    let newImage_upload = image_upload.filter((item, i) => i != index);
+                                                    setImage(newImage);
+                                                }}
+                                            >
+                                                <View style={{ flexDirection: 'row', justifyContent: 'center',width: 'auto' }}>
+                                                    <Icon name="times" size={20} color="#FF8D00" />
+                                                    <Text style={{ color: '#FF8D00', fontFamily: 'SukhumvitSet-SemiBold', textAlign: 'center', marginLeft: 10, marginTop: -3, fontSize: 16 }}>ลบ</Text>
+                                                </View>
+                                            </TouchableOpacity>
                                         </View>
                                     </>
                                 ))
@@ -208,7 +236,7 @@ const Regis_store = ({ navigation }) => {
                         </View>
                     </View>
 
-                    <MapView style={styles.map} 
+                    <MapView style={styles.map}
                         showsUserLocation={true}
                         provider={PROVIDER_GOOGLE}
                         region={{
@@ -219,9 +247,9 @@ const Regis_store = ({ navigation }) => {
                         }}
                     />
                 </ScrollView>
-                <View style={{ padding: 20 , paddingTop: 0 , paddingBottom:10 }}>
-                    <TouchableOpacity style={{ backgroundColor: '#FF8D00', width: '100%', padding: 12, borderRadius: 50, marginTop: 20 }}
-                        onPress={() => navigation.navigate('Regis_customer')}
+                <View style={{ padding: 20, paddingTop: 0, paddingBottom: 10 }}>
+                    <TouchableOpacity style={{ backgroundColor: '#FF8D00', width: '100%', padding: 12, borderRadius: 50, marginTop: 10 }}
+                        onPress={() => saveData()}
                     >
                         <Text style={{ color: 'white', textAlign: 'center', fontSize: 16, fontFamily: 'SukhumvitSet-SemiBold' }}>
                             ลงทะเบียน
@@ -239,15 +267,15 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         paddingTop: 0,
-        paddingLeft: 20,
-        paddingRight: 20,
+        paddingLeft: 10,
+        paddingRight: 10,
         backgroundColor: '#FFF9EB',
     },
     form_control: {
         width: '100%',
         marginTop: 10,
         padding: 10,
-        borderRadius: 50,
+        borderRadius: 10,
         borderWidth: 0.8,
         borderColor: '#FF8D00',
         backgroundColor: '#FCFCFC',
@@ -260,7 +288,7 @@ const styles = StyleSheet.create({
         width: '100%',
         marginTop: 10,
         padding: 10,
-        borderRadius: 50,
+        borderRadius: 10,
         borderWidth: 0.8,
         borderColor: '#FF8D00',
         backgroundColor: '#FCFCFC',
@@ -283,9 +311,10 @@ const styles = StyleSheet.create({
         paddingLeft: 10,
         paddingRight: 10,
         paddingBottom: 10,
+        width: '100%',
     },
     imageItemGrid: {
-        width: '48.5%',
+        width: 160,
         height: 100,
         objectFit: 'cover',
         borderRadius: 10,
@@ -297,5 +326,5 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         borderWidth: 0.8,
         borderColor: '#FF8D00',
-      },
+    },
 });

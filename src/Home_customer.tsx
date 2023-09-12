@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { StyleSheet, Text, View, TextInput, Dimensions, TouchableOpacity, ImageBackground, Image, Platform, ScrollView } from 'react-native';
 import {
     SafeAreaView,
@@ -6,59 +6,91 @@ import {
 } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/Feather';
 import { bakery, banner1, banner2, banner3, cookie, cake, drink, milk, teaCup, bubbleTea } from '../assets/list';
-import Swiper from 'react-native-swiper'
-import './config'
+import Swiper from 'react-native-swiper';
+import { useFonts } from 'expo-font';
+import * as SplashScreen from 'expo-splash-screen';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Home_customer = ({ navigation }) => {
+    const [data, setData] = useState<String[]>([]);
+    const [dataDetail , setDataDetail] = useState<String[]>([]);
+    const [fontsLoaded] = useFonts({
+        'SukhumvitSet-Bold': require('../assets/fonts/SukhumvitSet-Bold.ttf'),
+        'SukhumvitSet-SemiBold': require('../assets/fonts/SukhumvitSet-SemiBold.ttf'),
+        'SukhumvitSet-Text': require('../assets/fonts/SukhumvitSet-Text.ttf'),
+    });
+
+    useEffect(() => {
+        AsyncStorage.getItem('data').then((value) => {
+            if (value != null) {
+                setData(JSON.parse(value));
+            }
+        });
+
+        AsyncStorage.getItem('dataDetail').then((value) => {
+            if (value != null) {
+                setDataDetail(JSON.parse(value));
+            }
+        }
+        )
+    }, []);
+
+    const onLayoutRootView = useCallback(async () => {
+        if (fontsLoaded) {
+            await SplashScreen.hideAsync();
+        }
+    }, [fontsLoaded]);
+
+    if (!fontsLoaded) {
+        return null;
+    }
+
     const width = Dimensions.get('window').width;
-    // check platform
     const isWeb = Platform.OS === 'web';
     const isAndroid = Platform.OS === 'android';
     const isIOS = Platform.OS === 'ios';
 
-    const data = [
-        {
-            title: "Aenean leo",
-            body: "Ut tincidunt tincidunt erat. Sed cursus turpis vitae tortor. Quisque malesuada placerat nisl. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem.",
-            imgUrl: "https://picsum.photos/id/11/200/300",
-        },
-        {
-            title: "In turpis",
-            body: "Aenean ut eros et nisl sagittis vestibulum. Donec posuere vulputate arcu. Proin faucibus arcu quis ante. Curabitur at lacus ac velit ornare lobortis. ",
-            imgUrl: "https://picsum.photos/id/10/200/300",
-        },
-        {
-            title: "Lorem Ipsum",
-            body: "Phasellus ullamcorper ipsum rutrum nunc. Nullam quis ante. Etiam ultricies nisi vel augue. Aenean tellus metus, bibendum sed, posuere ac, mattis non, nunc.",
-            imgUrl: "https://picsum.photos/id/12/200/300",
-        },
-    ];
-
     return (
         <SafeAreaProvider style={{ backgroundColor: '#FFF9EB' }}>
-            <SafeAreaView style={{ flex: 1, backgroundColor: 'transparent' }}>
+            <SafeAreaView style={{ flex: 1, backgroundColor: 'transparent' }}
+                edges={['right', 'top', 'left']}
+            >
                 <View style={styles.flex}>
-                    <View style={{ paddingLeft: 15, flexDirection: 'row', marginTop: 10 }}>
+                    <View style={{ flexDirection: 'row' }}>
                         <Image source={bakery} style={{ width: 42, height: 42, objectFit: 'contain' }} />
                         <View>
                             <Text style={{ fontSize: 16, color: '#FF8D00', fontFamily: 'SukhumvitSet-Bold', marginLeft: 5 }}>พร้อมกิน</Text>
-                            <Text style={{ fontSize: 14, color: '#515151', fontFamily: 'SukhumvitSet-Text', marginLeft: 5, position: 'relative', top: -2 }}>Ready to eat</Text>
+                            <Text style={{ fontSize: 14, color: '#515151', fontFamily: 'SukhumvitSet-Text', marginLeft: 5, position: 'relative', top: -2 }}>Prompt gin</Text>
                         </View>
                     </View>
-                    <View style={{ paddingRight: 15, flexDirection: 'row' }}>
+                    <View style={{ flexDirection: 'row' }}>
+                        <View>
+                            <TouchableOpacity
+                                onPress={() => navigation.navigate('Cart_customer')}
+                            >
+                                <Icon name="bell" size={26} color="#FF8D00" style={{ top: 10, marginRight: 15 }} />
+                            </TouchableOpacity>
+                            {/* <View style={{ position: 'absolute', top: 0, right: 0, backgroundColor: '#FF8D00', width: 20, height: 20, borderRadius: 10, alignItems: 'center', justifyContent: 'center' }}>
+                                <Text style={{ color: '#FFF', fontSize: 10 }}>10</Text>
+                            </View> */}
+                        </View>
                         <TouchableOpacity
-                            onPress={() => navigation.navigate('Cart_customer')}
+                            onPress={() => {
+                                if (data.length > 0) {
+                                    navigation.navigate('Useraccount')
+                                } else {
+                                    navigation.navigate('Login')
+                                }
+                            }}
                         >
-                            <Icon name="bell" size={26} color="#FF8D00" style={{ top: 10 }} />
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                            onPress={() => navigation.navigate('Profile_customer')}
-                        >
-                            <Icon name="user" size={26} color="#FF8D00" style={{ top: 10, marginLeft: 18 }} />
+                            <Icon name="user" size={26} color="#FF8D00" style={{ top: 10 }} />
                         </TouchableOpacity>
                     </View>
                 </View>
-                <ScrollView style={{ paddingTop: 0, marginTop: -35 }}>
+                <Text>
+
+                </Text>
+                <ScrollView style={{ paddingTop: 0, zIndex: -1, marginTop: -35 }}>
                     <Swiper
                         autoplay
                         autoplayTimeout={3}
@@ -79,7 +111,12 @@ const Home_customer = ({ navigation }) => {
                     </Swiper>
                     <View style={{ paddingLeft: 5, paddingRight: 5 }}>
                         <View style={styles.grid_a}>
-                            <TouchableOpacity style={styles.grid_item} onPress={() => navigation.navigate('Product_customer')}>
+                            <TouchableOpacity style={styles.grid_item} onPress={() => navigation.navigate('List_product_customer',
+                                {
+                                    id: 1,
+                                    type: 'ขนมปัง',
+                                }
+                            )}>
                                 <Image source={bakery} style={styles.Image} />
                                 <View style={styles.lableImage}>
                                     <Text style={styles.lableTextImage}>
@@ -87,7 +124,10 @@ const Home_customer = ({ navigation }) => {
                                     </Text>
                                 </View>
                             </TouchableOpacity>
-                            <TouchableOpacity style={styles.grid_item} onPress={() => navigation.navigate('Product_customer')}>
+                            <TouchableOpacity style={styles.grid_item} onPress={() => navigation.navigate('Product_customer', {
+                                id: 2,
+                                type: 'คุกกี้',
+                            })}>
                                 <Image source={cookie} style={styles.Image} />
                                 <View style={styles.lableImage}>
                                     <Text style={styles.lableTextImage}>
@@ -95,7 +135,10 @@ const Home_customer = ({ navigation }) => {
                                     </Text>
                                 </View>
                             </TouchableOpacity>
-                            <TouchableOpacity style={styles.grid_item} onPress={() => navigation.navigate('Product_customer')}>
+                            <TouchableOpacity style={styles.grid_item} onPress={() => navigation.navigate('Product_customer', {
+                                id: 3,
+                                type: 'เค้ก',
+                            })}>
                                 <Image source={cake} style={styles.Image} />
                                 <View style={styles.lableImage}>
                                     <Text style={styles.lableTextImage}>
@@ -104,52 +147,21 @@ const Home_customer = ({ navigation }) => {
                                 </View>
                             </TouchableOpacity>
                         </View>
-                        <View style={styles.grid_b}>
-                            <TouchableOpacity style={styles.grid_item} onPress={() => navigation.navigate('Product_customer')}>
-                                <Image source={drink} style={styles.Image} />
-                                <View style={styles.lableImage}>
-                                    <Text style={styles.lableTextImage}>
-                                        นำ้ผลไม้
-                                    </Text>
-                                </View>
-                            </TouchableOpacity>
-                            <TouchableOpacity style={styles.grid_item} onPress={() => navigation.navigate('Product_customer')}>
-                                <Image source={milk} style={styles.Image} />
-                                <View style={styles.lableImage}>
-                                    <Text style={styles.lableTextImage}>
-                                        นม
-                                    </Text>
-                                </View>
-                            </TouchableOpacity>
-                            <TouchableOpacity style={styles.grid_item} onPress={() => navigation.navigate('Product_customer')}>
-                                <Image source={teaCup} style={styles.Image} />
-                                <View style={styles.lableImage}>
-                                    <Text style={styles.lableTextImage}>
-                                        ชา
-                                    </Text>
-                                </View>
-                            </TouchableOpacity>
-                            <TouchableOpacity style={styles.grid_item} onPress={() => navigation.navigate('Product_customer')}>
-                                <Image source={bubbleTea} style={styles.Image} />
-                                <View style={styles.lableImage}>
-                                    <Text style={styles.lableTextImage}>
-                                        ชานม
-                                    </Text>
-                                </View>
-                            </TouchableOpacity>
-                        </View>
                     </View>
                 </ScrollView>
             </SafeAreaView>
-            {/* <View style={styles.fab}>
-                <TouchableOpacity
-                    style={styles.fab_button}
-                >
-                    <Icon name="plus" size={26} color="black" />
-                </TouchableOpacity>
-            </View> */}
 
-            <View style={isIOS ? styles.navigation_ios : styles.navigation_android}>
+            <SafeAreaView
+                edges={['bottom']}
+                style={{
+                    backgroundColor: '#ffa73c',
+                    justifyContent: 'center',
+                    paddingTop: 15,
+                    borderTopLeftRadius: 20,
+                    borderTopRightRadius: 20,
+                    paddingBottom: Platform.OS === 'ios' ? 5 : 15,
+                }}
+            >
                 <View style={styles.navigationGrid}>
                     <TouchableOpacity style={styles.navigationItem} onPress={() => navigation.navigate('Home_customer')}>
                         <Icon name="home" size={24} color="black" />
@@ -170,7 +182,9 @@ const Home_customer = ({ navigation }) => {
                         <Text style={styles.navigationText}>ตั้งค่า</Text>
                     </TouchableOpacity>
                 </View>
-            </View>
+            </SafeAreaView>
+            {/* <View style={isIOS ? styles.navigation_ios : styles.navigation_android}> */}
+            {/* </View> */}
         </SafeAreaProvider>
     )
 }
@@ -180,6 +194,9 @@ const styles = StyleSheet.create({
     flex: {
         flexDirection: 'row',
         justifyContent: 'space-between',
+        marginTop: 5,
+        paddingLeft: 15,
+        paddingRight: 15
     },
 
     grid_a: {
@@ -201,7 +218,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#ffebd2',
         // backgroundColor: 'transparent',
         borderRadius: 10,
-        padding: 10
+        padding: 10,
     },
     lableImage: {
         width: '100%',

@@ -1,30 +1,28 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, TextInput, ScrollView, FlatList, Platform } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, TextInput, ScrollView, FlatList, Platform, Alert , NativeModules } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import BottomSheet from "react-native-gesture-bottom-sheet";
 import * as Location from 'expo-location';
 import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
-import './config'
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useRoute } from '@react-navigation/native';
 
-const Regis_customer = ({ navigation }) => {
-    interface Data {
-        id: number;
-        label: string;
-        value: string;
-        old: number;
-    }
-
+const Regis_customer = ({ navigation}) => {
     const bottomSheet = useRef() as React.MutableRefObject<BottomSheet>;
     const [latitude, setLatitude] = useState(null);
     const [longitude, setLongitude] = useState(null);
     const [show, setShow] = useState(true)
     const [showPassword, setShowPassword] = useState(true)
-    // check platform
-    const isWeb = Platform.OS === 'web';
-    const isAndroid = Platform.OS === 'android';
-    const isIOS = Platform.OS === 'ios';
 
+    const [name, setName] = useState<string>('');
+    const [phone, setPhone] = useState<string>('');
+    const [email, setEmail] = useState<string>('');
+    const [password, setPassword] = useState<string>('');
+    const [confirm, setConfirm] = useState<string>('');
+    const [oldLable, setOldLable] = useState('เลือกช่วงอายุ') // ช่วงอายุ
+    const [old, setOld] = useState(0) // อายุ
+    
     useEffect(() => {
         // เช็คสิทธิ์การเข้าถึง location
         const getPermission = async () => {
@@ -42,8 +40,6 @@ const Regis_customer = ({ navigation }) => {
         getLocation();
     })
 
-    const [oldLable, setOldLable] = useState('เลือกช่วงอายุ') // ช่วงอายุ
-    const [old, setOld] = useState(0) // อายุ
     const OldList = [
         { id: 1, label: '0 - 9 ปี', value: '0 - 9 ปี' },
         { id: 2, label: '10 - 19 ปี', value: '10 - 19 ปี' },
@@ -52,6 +48,38 @@ const Regis_customer = ({ navigation }) => {
         { id: 5, label: '40 - 54 ปี', value: '40 - 54 ปี' },
         { id: 6, label: '55 - ปีขึ้นไป', value: '55 - ปีขึ้นไป' }
     ]
+
+    const regis_customer = () => {
+        if (password != confirm || password == '' || confirm == '') {
+            Alert.alert('เกิดข้อผิดพลาด', `รหัสผ่านไม่ตรงกัน`, [{ text: 'ตกลง' }])
+            return false;
+        } else {
+            var formData = new FormData();
+            formData.append('name', name);
+            formData.append('phone', phone);
+            formData.append('email', email);
+            formData.append('password', password);
+            formData.append('old', old.toString());
+            formData.append('latitude', latitude.toString());
+            formData.append('longitude', longitude.toString());
+            formData.append('status', 'c');
+            
+            fetch('http://apichatapi.ddns.net:8888/prompt_gin_api/public/api/regis_customer', {
+                method: 'POST',
+                body: formData
+            })
+                .then(res => res.json())
+                .then((data) => {
+                    if(data.status == 200){
+                        Alert.alert('สมัครสมาชิกสำเร็จ', 'กำลังนำทางเข้าสู่ระบบ', [{ text: 'ตกลง' }])
+                        AsyncStorage.setItem('data', JSON.stringify(data.data));
+                        NativeModules.DevSettings.reload();
+                    }
+                }).catch((error) => {
+                    alert(error);
+                })
+        }
+    }
 
     return (
         <SafeAreaProvider style={{ backgroundColor: '#FFF9EB' }}>
@@ -70,12 +98,23 @@ const Regis_customer = ({ navigation }) => {
                     <Text style={{ fontSize: 15, fontFamily: 'SukhumvitSet-Bold', color: '#5E605E' }}>ข้อมูลผู้ใช้งาน</Text>
                 </View>
                 <ScrollView style={{ paddingLeft: 20, paddingRight: 20 }}>
-                    <TextInput style={styles.form_control} placeholder="ชื่อ - นามสกุล" />
-                    <TextInput style={styles.form_control} placeholder="เบอร์โทรศัพท์" keyboardType="numeric" maxLength={10} />
-                    <TextInput style={styles.form_control} placeholder="อีเมล์" />
+                    <TextInput style={styles.form_control} placeholder="ชื่อ - นามสกุล"
+                        value={name}
+                        onChangeText={(text) => setName(text)}
+                    />
+                    <TextInput style={styles.form_control} placeholder="เบอร์โทรศัพท์" maxLength={10}
+                        value={phone}
+                        onChangeText={(text) => setPhone(text)}
+                    />
+                    <TextInput style={styles.form_control} placeholder="อีเมล์"
+                        value={email}
+                        onChangeText={(text) => setEmail(text)}
+                    />
                     <View>
                         <TextInput style={styles.form_control} placeholder="รหัสผ่าน"
                             secureTextEntry={showPassword}
+                            value={password}
+                            onChangeText={(text) => setPassword(text)}
                         />
                         <TouchableOpacity
                             style={{ position: 'absolute', right: 0 }}
@@ -88,6 +127,8 @@ const Regis_customer = ({ navigation }) => {
                     <View>
                         <TextInput style={styles.form_control} placeholder="ยืนยันรหัสผ่าน"
                             secureTextEntry={show}
+                            value={confirm}
+                            onChangeText={(text) => setConfirm(text)}
                         />
                         <TouchableOpacity
                             style={{ position: 'absolute', right: 0 }}
@@ -147,9 +188,9 @@ const Regis_customer = ({ navigation }) => {
                         }}
                     />
                 </ScrollView>
-                <View style={{ padding: 20 , paddingTop: 0 , paddingBottom:10 }}>
+                <View style={{ padding: 20, paddingTop: 0, paddingBottom: 10 }}>
                     <TouchableOpacity style={{ backgroundColor: '#FF8D00', width: '100%', padding: 12, borderRadius: 50, marginTop: 20 }}
-                        onPress={() => navigation.navigate('Regis_customer')}
+                        onPress={() => regis_customer()}
                     >
                         <Text style={{ color: 'white', textAlign: 'center', fontSize: 16, fontFamily: 'SukhumvitSet-SemiBold' }}>
                             ลงทะเบียน
@@ -166,15 +207,15 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         paddingTop: 0,
-        paddingLeft: 20,
-        paddingRight: 20,
+        paddingLeft: 10,
+        paddingRight: 10,
         backgroundColor: '#FFF9EB',
     },
     form_control: {
         width: '100%',
         marginTop: 10,
         padding: 10,
-        borderRadius: 50,
+        borderRadius: 10,
         borderWidth: 0.8,
         borderColor: '#FF8D00',
         backgroundColor: '#FCFCFC',
@@ -187,7 +228,7 @@ const styles = StyleSheet.create({
         width: '100%',
         marginTop: 10,
         padding: 10,
-        borderRadius: 50,
+        borderRadius: 10,
         borderWidth: 0.8,
         borderColor: '#FF8D00',
         backgroundColor: '#FCFCFC',
